@@ -1,21 +1,20 @@
+/**
+ * Premium React Frontend for SEC 13F Filings
+ *
+ * This is the main entry point for the React application.
+ * All backend APIs remain completely untouched.
+ */
+
 import Rails from '@rails/ujs';
 Rails.start();
 
-import '@fontsource/ibm-plex-sans/400.css';
-import '@fontsource/ibm-plex-sans/500.css';
-import '@fontsource/ibm-plex-mono/400.css';
+// Fonts are loaded via Google Fonts CDN (see application.html.erb)
 
-require('datatables.net-dt');
-require('datatables.net-buttons/js/buttons.html5');
-require('datatables.net-fixedheader-dt');
-require('datatables.net-fixedheader-dt/css/fixedHeader.dataTables.css');
-import $ from 'jquery';
-window.$ = jQuery;
+// Import styles (includes Tailwind + Design System)
+import '../stylesheets/application.scss';
 
-require('javascripts/autocomplete.js');
-require('javascripts/datatables.js');
+// Import and mount React app
+import '../src/index.jsx';
 
-require('stylesheets/application.scss');
-require('stylesheets/datatables.scss');
-
+// Images context
 const images = require.context('../images', true);

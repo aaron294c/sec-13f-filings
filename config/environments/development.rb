@@ -8,6 +8,10 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
+  # Allow GitHub Codespaces and other development hosts
+  config.hosts << "animated-space-orbit-4xwg5q4wxg9hjvrj-3000.app.github.dev"
+  config.hosts << /[a-z0-9-]+\.app\.github\.dev/
+
   # Do not eager load code on boot.
   config.eager_load = false
 
