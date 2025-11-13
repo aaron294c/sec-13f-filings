@@ -89,8 +89,11 @@ class APIClient {
   }
 
   // Get newest/recent filings
-  async getNewestFilings(page = 1, perPage = 100) {
-    return this.get(`/data/newest?page=${page}&per_page=${perPage}`);
+  async getNewestFilings(page = 1, perPage = 100, year = null, quarter = null) {
+    let url = `/data/newest?page=${page}&per_page=${perPage}`;
+    if (year) url += `&year=${year}`;
+    if (quarter) url += `&quarter=${quarter}`;
+    return this.get(url);
   }
 
   // Get a manager's filings history

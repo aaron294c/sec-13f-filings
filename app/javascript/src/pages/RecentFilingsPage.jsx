@@ -14,13 +14,14 @@ export function RecentFilingsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedQuarter, setSelectedQuarter] = useState(2); // Default to Q2
 
   useEffect(() => {
     async function loadFilings() {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await api.getNewestFilings(currentPage, 50);
+        const data = await api.getNewestFilings(currentPage, 50, 2025, selectedQuarter);
         setFilings(data.filings);
         setPagination(data.pagination);
       } catch (err) {
@@ -32,7 +33,7 @@ export function RecentFilingsPage() {
     }
 
     loadFilings();
-  }, [currentPage]);
+  }, [currentPage, selectedQuarter]);
 
   if (isLoading && filings.length === 0) {
     return (
@@ -60,8 +61,32 @@ export function RecentFilingsPage() {
             <div>
               <CardTitle>Recent 13F Filings</CardTitle>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Latest filings from the past quarter
+                Top 100 filings by portfolio value
               </p>
+
+              {/* Quarter Tabs */}
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => { setSelectedQuarter(2); setCurrentPage(1); }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    selectedQuarter === 2
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Q2 2025
+                </button>
+                <button
+                  onClick={() => { setSelectedQuarter(3); setCurrentPage(1); }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    selectedQuarter === 3
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Q3 2025
+                </button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>

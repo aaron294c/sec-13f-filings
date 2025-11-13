@@ -176,14 +176,17 @@ class DataController < ApplicationController
   end
 
   def newest_filings_data
-    # Show filings for Q2 2025 (ended June 30, deadline was Aug 14)
-    # Most managers have filed Q2 2025 by now
+    # Show top 100 filings by portfolio value for the specified quarter
+    # Default to Q2 2025 if no parameters provided
+    year = params[:year]&.to_i || 2025
+    quarter = params[:quarter]&.to_i || 2
+
     filings = ThirteenF.
-      where(report_year: 2025, report_quarter: 2).
+      where(report_year: year, report_quarter: quarter).
       processed.
       without_xml_fields.
       includes(:filer).
-      order(date_filed: :desc, holdings_value_calculated: :desc).
+      order(holdings_value_calculated: :desc, date_filed: :desc).
       page(params[:page] || 1).
       per(params[:per_page] || 100)
 
@@ -254,6 +257,21 @@ class DataController < ApplicationController
     year = params[:year]&.to_i
     quarter = params[:quarter]&.to_i
 
+    # Get Q3 2025 stats - dynamically load top 100 managers
+    q3_year = 2025
+    q3_quarter = 3
+    q3_ciks = ThirteenF.
+      where(report_year: q3_year, report_quarter: q3_quarter).
+      processed.
+      exclude_restated.
+      where('holdings_value_calculated > 500000000').
+      order(holdings_value_calculated: :desc).
+      limit(100).
+      pluck(:cik).
+      uniq
+
+    q3_service = SuperinvestorStatsService.new(year: q3_year, quarter: q3_quarter, superinvestor_ciks: q3_ciks)
+
     # Get Q2 2025 stats - dynamically load top 100 managers
     q2_year = 2025
     q2_quarter = 2
@@ -269,47 +287,34 @@ class DataController < ApplicationController
 
     q2_service = SuperinvestorStatsService.new(year: q2_year, quarter: q2_quarter, superinvestor_ciks: q2_ciks)
 
-    # Get Q1 2025 stats - dynamically load top 100 managers
-    q1_year = 2025
-    q1_quarter = 1
-    q1_ciks = ThirteenF.
-      where(report_year: q1_year, report_quarter: q1_quarter).
-      processed.
-      exclude_restated.
-      where('holdings_value_calculated > 500000000').
-      order(holdings_value_calculated: :desc).
-      limit(100).
-      pluck(:cik).
-      uniq
-
-    q1_service = SuperinvestorStatsService.new(year: q1_year, quarter: q1_quarter, superinvestor_ciks: q1_ciks)
-
-    # Compare Q2 vs Q1
-    q2_stats_with_comparison = q2_service.compare_periods(q2_year, q2_quarter, q1_year, q1_quarter)
+    # Compare Q3 vs Q2
+    q3_stats_with_comparison = q3_service.compare_periods(q3_year, q3_quarter, q2_year, q2_quarter)
 
     render json: {
       periods: {
-        current: { year: q2_year, quarter: q2_quarter, manager_count: q2_ciks.count },
-        comparison: { year: q1_year, quarter: q1_quarter, manager_count: q1_ciks.count }
+        current: { year: q3_year, quarter: q3_quarter, manager_count: q3_ciks.count },
+        comparison: { year: q2_year, quarter: q2_quarter, manager_count: q2_ciks.count }
+      },
+      q3_data: {
+        superinvestors: q3_service.superinvestors_list,
+        stats: {
+          top_owned: q3_stats_with_comparison[:top_owned],
+          top_by_pct: q3_stats_with_comparison[:top_by_pct],
+          big_bets: q3_stats_with_comparison[:big_bets],
+          top_buys_1q: q3_service.top_buys_last_quarter,
+          top_buys_1q_pct: q3_service.top_buys_last_quarter_by_pct,
+          top_sells_1q: q3_service.top_sells_last_quarter,
+          top_sells_1q_pct: q3_service.top_sells_last_quarter_by_pct,
+          top_buys_2q: q3_service.top_buys_last_two_quarters,
+          top_buys_2q_pct: q3_service.top_buys_last_two_quarters_by_pct
+        }
       },
       q2_data: {
         superinvestors: q2_service.superinvestors_list,
         stats: {
-          top_owned: q2_stats_with_comparison[:top_owned],
-          top_by_pct: q2_stats_with_comparison[:top_by_pct],
-          big_bets: q2_stats_with_comparison[:big_bets],
-          top_buys_1q: q2_service.top_buys_last_quarter,
-          top_buys_1q_pct: q2_service.top_buys_last_quarter_by_pct,
-          top_buys_2q: q2_service.top_buys_last_two_quarters,
-          top_buys_2q_pct: q2_service.top_buys_last_two_quarters_by_pct
-        }
-      },
-      q1_data: {
-        superinvestors: q1_service.superinvestors_list,
-        stats: {
-          top_owned: q1_service.top_stocks_by_ownership_count,
-          top_by_pct: q1_service.top_stocks_by_aggregate_percentage,
-          big_bets: q1_service.top_big_bets
+          top_owned: q2_service.top_stocks_by_ownership_count,
+          top_by_pct: q2_service.top_stocks_by_aggregate_percentage,
+          big_bets: q2_service.top_big_bets
         }
       }
     }

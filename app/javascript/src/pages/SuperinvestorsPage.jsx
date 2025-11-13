@@ -10,7 +10,7 @@ export function SuperinvestorsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedQuarter, setSelectedQuarter] = useState('q2'); // 'q1' or 'q2'
+  const [selectedQuarter, setSelectedQuarter] = useState('q3'); // 'q2' or 'q3'
   const [isManagerListExpanded, setIsManagerListExpanded] = useState(false);
 
   useEffect(() => {
@@ -56,9 +56,9 @@ export function SuperinvestorsPage() {
 
   if (!data) return null;
 
-  const { periods, q1_data, q2_data } = data;
-  const currentData = selectedQuarter === 'q2' ? q2_data : q1_data;
-  const currentPeriod = selectedQuarter === 'q2' ? periods.current : periods.comparison;
+  const { periods, q2_data, q3_data } = data;
+  const currentData = selectedQuarter === 'q3' ? q3_data : q2_data;
+  const currentPeriod = selectedQuarter === 'q3' ? periods.current : periods.comparison;
   const superinvestors = currentData?.superinvestors || [];
   const stats = {
     top_owned: currentData?.stats?.top_owned || [],
@@ -66,13 +66,15 @@ export function SuperinvestorsPage() {
     big_bets: currentData?.stats?.big_bets || [],
     top_buys_1q: currentData?.stats?.top_buys_1q || [],
     top_buys_1q_pct: currentData?.stats?.top_buys_1q_pct || [],
+    top_sells_1q: currentData?.stats?.top_sells_1q || [],
+    top_sells_1q_pct: currentData?.stats?.top_sells_1q_pct || [],
     top_buys_2q: currentData?.stats?.top_buys_2q || [],
     top_buys_2q_pct: currentData?.stats?.top_buys_2q_pct || []
   };
 
   // Helper to render change indicator
   const renderChange = (stock, field) => {
-    if (selectedQuarter !== 'q2') return null;
+    if (selectedQuarter !== 'q3') return null;
     if (stock.is_new) {
       return <span className="text-xs text-blue-500 dark:text-blue-400 ml-2">NEW</span>;
     }
@@ -107,9 +109,9 @@ export function SuperinvestorsPage() {
         <div className="mb-6">
           <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
             <button
-              onClick={() => setSelectedQuarter('q2')}
+              onClick={() => setSelectedQuarter('q3')}
               className={`px-6 py-3 rounded-l-lg font-medium transition-colors ${
-                selectedQuarter === 'q2'
+                selectedQuarter === 'q3'
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
@@ -118,9 +120,9 @@ export function SuperinvestorsPage() {
               <span className="ml-2 text-xs opacity-75">({periods.current.manager_count} managers)</span>
             </button>
             <button
-              onClick={() => setSelectedQuarter('q1')}
+              onClick={() => setSelectedQuarter('q2')}
               className={`px-6 py-3 rounded-r-lg font-medium transition-colors ${
-                selectedQuarter === 'q1'
+                selectedQuarter === 'q2'
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
@@ -129,9 +131,9 @@ export function SuperinvestorsPage() {
               <span className="ml-2 text-xs opacity-75">({periods.comparison.manager_count} managers)</span>
             </button>
           </div>
-          {selectedQuarter === 'q2' && (
+          {selectedQuarter === 'q3' && (
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Showing Q2 vs Q1 comparison (changes shown in parentheses)
+              Showing Q3 vs Q2 comparison (changes shown in parentheses)
             </p>
           )}
         </div>
@@ -470,6 +472,80 @@ export function SuperinvestorsPage() {
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
                         {stock.ownership_count} buyer(s)
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Top Sells Last Quarter */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top 10 Sells Last Quarter</CardTitle>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                By absolute value decrease
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {stats.top_sells_1q.map((stock, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  >
+                    <div>
+                      <div className="font-mono font-semibold text-gray-900 dark:text-white">
+                        {stock.ticker}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {stock.issuer_name}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-red-600 dark:text-red-400">
+                        -{formatCurrency(stock.value_change)}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {stock.ownership_count} seller(s)
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Top Sells Last Quarter by % */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top 10 Sells Last Quarter by %</CardTitle>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                By percentage decrease
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {stats.top_sells_1q_pct.map((stock, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  >
+                    <div>
+                      <div className="font-mono font-semibold text-gray-900 dark:text-white">
+                        {stock.ticker}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {stock.issuer_name}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-red-600 dark:text-red-400">
+                        -{parseFloat(stock.pct_change).toFixed(1)}%
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {stock.ownership_count} seller(s)
                       </div>
                     </div>
                   </div>

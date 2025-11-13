@@ -62,6 +62,16 @@ class SuperinvestorStatsService
     @top_buys_last_two_quarters_by_pct ||= compute_top_buys(@year, @quarter, @two_q_ago_year, @two_q_ago_quarter, by_percentage: true)
   end
 
+  # Top 10 sells last quarter (by absolute value change)
+  def top_sells_last_quarter
+    @top_sells_last_quarter ||= compute_top_sells(@year, @quarter, @prev_year, @prev_quarter, by_percentage: false)
+  end
+
+  # Top 10 sells last quarter (by percentage change)
+  def top_sells_last_quarter_by_pct
+    @top_sells_last_quarter_by_pct ||= compute_top_sells(@year, @quarter, @prev_year, @prev_quarter, by_percentage: true)
+  end
+
   # Get list of superinvestors with their most recent portfolio data
   def superinvestors_list
     @superinvestors_list ||= begin
@@ -328,5 +338,57 @@ class SuperinvestorStatsService
     end
 
     changes
+  end
+
+  def compute_top_sells(current_year, current_quarter, prev_year, prev_quarter, by_percentage:)
+    # Get current period holdings
+    current_holdings = get_period_holdings(current_year, current_quarter)
+    prev_holdings = get_period_holdings(prev_year, prev_quarter)
+
+    # Calculate changes
+    sells = []
+
+    prev_holdings.each do |ticker, prev_data|
+      curr_data = current_holdings[ticker]
+
+      if curr_data
+        value_change = curr_data[:total_value] - prev_data[:total_value]
+        pct_change = if prev_data[:total_value] > 0
+          (value_change / prev_data[:total_value]) * 100.0
+        else
+          0
+        end
+
+        # Only include decreases (sells) - value_change will be negative
+        if value_change < 0
+          sells << {
+            ticker: ticker,
+            issuer_name: prev_data[:issuer_name],
+            value_change: value_change.abs, # Store as positive for sorting
+            pct_change: pct_change.abs, # Store as positive for sorting
+            current_value: curr_data[:total_value],
+            previous_value: prev_data[:total_value],
+            ownership_count: prev_data[:holder_count]
+          }
+        end
+      else
+        # Position eliminated completely
+        sells << {
+          ticker: ticker,
+          issuer_name: prev_data[:issuer_name],
+          value_change: prev_data[:total_value],
+          pct_change: 100.0, # Sold entire position = 100% decrease
+          current_value: 0,
+          previous_value: prev_data[:total_value],
+          ownership_count: prev_data[:holder_count]
+        }
+      end
+    end
+
+    if by_percentage
+      sells.sort_by { |s| -s[:pct_change].to_f }.first(10)
+    else
+      sells.sort_by { |s| -s[:value_change].to_f }.first(10)
+    end
   end
 end
