@@ -97,6 +97,15 @@ class APIClient {
   async getManagerFilings(cik, page = 1, perPage = 50) {
     return this.get(`/data/manager/${cik}/filings?page=${page}&per_page=${perPage}`);
   }
+
+  // Get superinvestor portfolio statistics
+  async getSuperinvestorStats(year = null, quarter = null) {
+    const params = [];
+    if (year) params.push(`year=${year}`);
+    if (quarter) params.push(`quarter=${quarter}`);
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+    return this.get(`/data/superinvestors/stats${queryString}`);
+  }
 }
 
 export const api = new APIClient();

@@ -24,9 +24,9 @@ export function Card({
   );
 }
 
-export function CardHeader({ children, className }) {
+export function CardHeader({ children, className, ...props }) {
   return (
-    <div className={cn('border-b border-gray-200 dark:border-gray-700 pb-4 mb-4', className)}>
+    <div className={cn('border-b border-gray-200 dark:border-gray-700 pb-4 mb-4', className)} {...props}>
       {children}
     </div>
   );

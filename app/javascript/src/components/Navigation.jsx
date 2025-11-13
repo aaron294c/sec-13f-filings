@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { MoonIcon, SunIcon, HomeIcon, UsersIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { MoonIcon, SunIcon, HomeIcon, UsersIcon, DocumentTextIcon, StarIcon } from '@heroicons/react/24/outline';
 import { useTheme } from '../contexts/ThemeContext';
 import { Container } from './Container';
 import { cn } from '../lib/utils';
@@ -8,6 +8,7 @@ const navigationItems = [
   { name: 'Home', href: '/', icon: HomeIcon },
   { name: 'Managers', href: '/managers', icon: UsersIcon },
   { name: 'Recent Filings', href: '/newest', icon: DocumentTextIcon },
+  { name: 'Superinvestors', href: '/superinvestors', icon: StarIcon },
 ];
 
 export function Navigation() {

@@ -7,6 +7,7 @@ import { ManagerDetailPage } from './pages/ManagerDetailPage';
 import { FilingDetailPage } from './pages/FilingDetailPage';
 import { CusipDetailPage } from './pages/CusipDetailPage';
 import { RecentFilingsPage } from './pages/RecentFilingsPage';
+import { SuperinvestorsPage } from './pages/SuperinvestorsPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/managers" element={<ManagersPage />} />
             <Route path="/newest" element={<RecentFilingsPage />} />
+            <Route path="/superinvestors" element={<SuperinvestorsPage />} />
 
             {/* Manager routes */}
             <Route path="/manager/:cik" element={<ManagerDetailPage />} />

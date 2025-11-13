@@ -9,11 +9,13 @@ Rails.application.routes.draw do
   get '/data/13f/:external_id/compare/:other_external_id', to: 'data#compare_holdings_data', as: :thirteen_f_comparison_data
   get '/data/cusip/:cusip/:year/:quarter', to: 'data#all_cusip_holders_data', as: :all_cusip_holders_data
   get '/data/manager/:cik/cusip/:cusip', to: 'data#manager_cusip_history_data', as: :manager_cusip_history_data
+  get '/data/superinvestors/stats', to: 'data#superinvestor_stats', as: :superinvestor_stats_data
 
   # All other routes render the React SPA
   root to: 'home#index'
   get '/managers', to: 'home#index'
   get '/newest', to: 'home#index'
+  get '/superinvestors', to: 'home#index'
   get '/manager/*path', to: 'home#index'
   get '/13f/*path', to: 'home#index'
   get '/cusip/*path', to: 'home#index'
