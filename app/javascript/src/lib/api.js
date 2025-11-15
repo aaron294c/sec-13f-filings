@@ -109,6 +109,16 @@ class APIClient {
     const queryString = params.length > 0 ? `?${params.join('&')}` : '';
     return this.get(`/data/superinvestors/stats${queryString}`);
   }
+
+  // Get grand portfolio consensus holdings
+  async getGrandPortfolio() {
+    return this.get('/data/grand-portfolio');
+  }
+
+  // Get individual manager's portfolio with Q3 vs Q2 changes
+  async getManagerPortfolio(cik) {
+    return this.get(`/data/manager/${cik}/portfolio`);
+  }
 }
 
 export const api = new APIClient();

@@ -112,12 +112,20 @@ export function RecentFilingsPage() {
                     <TableRow key={filing.external_id} hover>
                       <TableCell>
                         <div>
-                          <Link
-                            to={filing.path}
-                            className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                          >
-                            {filing.manager_name}
-                          </Link>
+                          <div className="flex items-center gap-2">
+                            <Link
+                              to={filing.path}
+                              className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
+                            >
+                              {filing.manager_name}
+                            </Link>
+                            <Link
+                              to={`/manager/${filing.cik}/portfolio`}
+                              className="text-xs text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:underline"
+                            >
+                              Portfolio →
+                            </Link>
+                          </div>
                           {filing.amendment_type && (
                             <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
                               {filing.amendment_type}

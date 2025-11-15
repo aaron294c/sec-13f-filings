@@ -6,6 +6,11 @@ class AggregateHolding < ApplicationRecord
     class_name: "ThirteenF",
     foreign_key: :thirteen_f_id
 
+  belongs_to :cusip_symbol_mapping,
+    primary_key: :cusip,
+    foreign_key: :cusip,
+    optional: true
+
   scope :descend_by_value, -> { order("value DESC, lower(issuer_name)") }
 
   scope :all_cusip_holdings, -> (cusip, year, quarter) {

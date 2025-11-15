@@ -4,10 +4,12 @@ import { Navigation } from './components/Navigation';
 import { HomePage } from './pages/HomePage';
 import { ManagersPage } from './pages/ManagersPage';
 import { ManagerDetailPage } from './pages/ManagerDetailPage';
+import { ManagerPortfolioPage } from './pages/ManagerPortfolioPage';
 import { FilingDetailPage } from './pages/FilingDetailPage';
 import { CusipDetailPage } from './pages/CusipDetailPage';
 import { RecentFilingsPage } from './pages/RecentFilingsPage';
 import { SuperinvestorsPage } from './pages/SuperinvestorsPage';
+import { GrandPortfolioPage } from './pages/GrandPortfolioPage';
 
 function App() {
   return (
@@ -20,9 +22,11 @@ function App() {
             <Route path="/managers" element={<ManagersPage />} />
             <Route path="/newest" element={<RecentFilingsPage />} />
             <Route path="/superinvestors" element={<SuperinvestorsPage />} />
+            <Route path="/grand-portfolio" element={<GrandPortfolioPage />} />
 
             {/* Manager routes */}
             <Route path="/manager/:cik" element={<ManagerDetailPage />} />
+            <Route path="/manager/:cik/portfolio" element={<ManagerPortfolioPage />} />
 
             {/* Filing routes */}
             <Route path="/13f/:externalId" element={<FilingDetailPage />} />

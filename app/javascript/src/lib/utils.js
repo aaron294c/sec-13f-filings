@@ -93,5 +93,7 @@ export function getChangePercentage(oldValue, newValue) {
  */
 export function formatPercentage(value, decimals = 2) {
   if (value === null || value === undefined) return 'N/A';
-  return `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`;
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(numValue)) return 'N/A';
+  return `${numValue >= 0 ? '+' : ''}${numValue.toFixed(decimals)}%`;
 }

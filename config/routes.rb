@@ -10,12 +10,15 @@ Rails.application.routes.draw do
   get '/data/cusip/:cusip/:year/:quarter', to: 'data#all_cusip_holders_data', as: :all_cusip_holders_data
   get '/data/manager/:cik/cusip/:cusip', to: 'data#manager_cusip_history_data', as: :manager_cusip_history_data
   get '/data/superinvestors/stats', to: 'data#superinvestor_stats', as: :superinvestor_stats_data
+  get '/data/grand-portfolio', to: 'data#grand_portfolio_data', as: :grand_portfolio_data
+  get '/data/manager/:cik/portfolio', to: 'data#manager_portfolio_data', as: :manager_portfolio_data
 
   # All other routes render the React SPA
   root to: 'home#index'
   get '/managers', to: 'home#index'
   get '/newest', to: 'home#index'
   get '/superinvestors', to: 'home#index'
+  get '/grand-portfolio', to: 'home#index'
   get '/manager/*path', to: 'home#index'
   get '/13f/*path', to: 'home#index'
   get '/cusip/*path', to: 'home#index'
